@@ -1,22 +1,30 @@
+"use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   FormItem,
   FormControl,
   FormDescription,
   FormMessage,
+  FormField,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Control, Controller } from "react-hook-form";
-import { CustomFormData } from "./types";
+import { TQuestionFormSchema, useZodForm } from "./schema";
+import { UseFormReturn } from "react-hook-form";
 
 export default function AskQuestion({
   qNo,
   questionName,
-  questionFormControl,
+  qf,
 }: {
   qNo: number;
-  questionName: string;
-  questionFormControl: Control<CustomFormData, any>;
+  questionName: `questions${number}`;
+  qf: UseFormReturn<
+    {
+      [x: `questions${number}`]: string;
+    },
+    any,
+    undefined
+  >;
 }) {
   return (
     <div>
@@ -25,14 +33,18 @@ export default function AskQuestion({
           <CardTitle>Question {qNo}</CardTitle>
         </CardHeader>
         <CardContent>
-          <Controller
-            control={questionFormControl}
+          <FormField
+            control={qf.control}
             name={questionName}
             render={({ field }) => {
               return (
                 <FormItem>
                   <FormControl>
-                    <Input placeholder="question goes here...." {...field} />
+                    <Input
+                      placeholder="question goes here...."
+                      {...field}
+                      id={`question${qNo}`}
+                    />
                   </FormControl>
                   <FormDescription>
                     Select the type of Answer this question requires.
@@ -41,7 +53,7 @@ export default function AskQuestion({
                 </FormItem>
               );
             }}
-          ></Controller>
+          ></FormField>
         </CardContent>
       </Card>
     </div>
