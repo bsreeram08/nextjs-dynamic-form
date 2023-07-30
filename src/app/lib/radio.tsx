@@ -1,12 +1,6 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-
-import { Button } from "@/components/ui/button";
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,
@@ -14,21 +8,28 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { QuestionTypeTest, QuestionTypes, QuestionZodForm } from "../schema";
+import {
+  QuestionTypeTest,
+  QuestionTypes,
+  QuestionZodForm,
+  TQuestionTypes,
+} from "../schema";
 
 export function RadioGroupForm({
   zodForm,
   qNo,
   id,
+  updateSelect,
 }: {
   zodForm: QuestionZodForm;
   qNo: number;
   id: string;
+  updateSelect: (event: TQuestionTypes) => void;
 }) {
   return (
     <div>
       <FormField
-        {...zodForm.register(`questions.${qNo}.formType`)}
+        {...zodForm.register(`questions.${qNo - 1}.formType`)}
         render={({ field }) => (
           <FormItem className="space-y-3">
             <FormLabel>
@@ -36,8 +37,11 @@ export function RadioGroupForm({
             </FormLabel>
             <FormControl>
               <RadioGroup
-                onValueChange={field.onChange}
-                defaultValue={field.value}
+                onValueChange={(event: TQuestionTypes) => {
+                  field.onChange(event);
+                  updateSelect(event);
+                }}
+                defaultValue={QuestionTypes[0]}
                 className="flex flex-col space-y-1"
               >
                 {QuestionTypes.map((_, index) => {

@@ -5,10 +5,10 @@ import { ZodString, z } from "zod";
 import { UseFormReturn } from "react-hook-form";
 
 export const QuestionTypes = [
-  "RADIO",
-  "CHECK",
   "SMALL_TEXT",
   "LARGE_TEXT",
+  "RADIO",
+  "CHECK",
 ] as const;
 
 export type TQuestionTypes = (typeof QuestionTypes)[number];

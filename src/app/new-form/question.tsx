@@ -8,44 +8,61 @@ import {
   FormField,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { RadioGroupForm } from "../_lib/radio";
-import { QuestionZodForm } from "../schema";
+import { RadioGroupForm } from "../lib/radio";
+import { QuestionZodForm, TQuestionTypes } from "../schema";
+
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export default function AskQuestion({
   qNo,
   id,
   zodForm,
+  open,
 }: {
   qNo: number;
   id: string;
   zodForm: QuestionZodForm;
+  open: boolean;
 }) {
+  const [question, setQuestion] = useState<string>("");
+  const [formType, setFormType] = useState<TQuestionTypes>("SMALL_TEXT");
   return (
     <div id={`${id}-div`}>
       <Card>
-        <Collapsible>
-          <CollapsibleTrigger>
+        <AccordionItem
+          value={`question-${qNo - 1}-accordion-item`}
+          className="px-4"
+        >
+          <AccordionTrigger>
             <CardHeader>
-              <CardTitle>Question {qNo}</CardTitle>
+              <CardTitle>
+                {question == "" ? `Question ${qNo}` : question}
+              </CardTitle>
             </CardHeader>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
+          </AccordionTrigger>
+          <AccordionContent>
             <CardContent>
               <FormField
-                {...zodForm.register(`questions.${qNo}.question`)}
+                {...zodForm.register(`questions.${qNo - 1}.question`)}
                 render={({ field }) => {
                   return (
                     <FormItem>
                       <FormControl>
                         <Input
                           placeholder="question goes here...."
-                          id={id}
+                          id={`${id}-input`}
                           {...field}
+                          onChange={(event) => {
+                            event.preventDefault();
+                            field.onChange(event.target.value);
+                            setQuestion(event.target.value);
+                          }}
                         />
                       </FormControl>
                       <FormDescription>
@@ -53,7 +70,16 @@ export default function AskQuestion({
                           zodForm={zodForm}
                           key={`${id}-options`}
                           qNo={qNo}
+                          updateSelect={(value: TQuestionTypes) => {
+                            setFormType(value);
+                          }}
                           id={id}
+                        />
+                        <SubQuestion
+                          type={formType}
+                          id={id}
+                          qNo={qNo}
+                          zodForm={zodForm}
                         />
                       </FormDescription>
                       <FormMessage />
@@ -62,9 +88,66 @@ export default function AskQuestion({
                 }}
               ></FormField>
             </CardContent>
-          </CollapsibleContent>
-        </Collapsible>
+          </AccordionContent>
+        </AccordionItem>
       </Card>
     </div>
   );
+}
+
+function SubQuestion({
+  type,
+  qNo,
+  id,
+  zodForm,
+}: {
+  type: TQuestionTypes;
+  qNo: number;
+  id: string;
+  zodForm: QuestionZodForm;
+}) {
+  const subQuestionTypes: Array<TQuestionTypes> = ["CHECK", "RADIO"];
+  const [subQuestions, setSubQuestions] = useState<Array<string>>([""]);
+  if (!subQuestionTypes.includes(type)) return <div></div>;
+  else
+    return (
+      <div>
+        <br />
+        {subQuestions.map((_, index) => {
+          return (
+            <div key={`${id}-question-${type}-${index}-key`}>
+              <FormField
+                {...zodForm.register(`questions.${qNo - 1}.options.${index}`)}
+                render={({ field }) => {
+                  return (
+                    <FormItem className="font-bold">
+                      <FormControl>
+                        <Input
+                          placeholder={`Option - ${index + 1}`}
+                          className="w-full"
+                          id={`${id}-questions-${type}-option-${index + 1}`}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              ></FormField>
+            </div>
+          );
+        })}
+        <br />
+        <Button
+          variant="secondary"
+          className="w-1/2"
+          onClick={(event) => {
+            event.preventDefault();
+            setSubQuestions([...subQuestions, ""]);
+          }}
+        >
+          Add another option.
+        </Button>
+      </div>
+    );
 }

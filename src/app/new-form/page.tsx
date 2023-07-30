@@ -2,7 +2,6 @@
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormMessage,
@@ -16,6 +15,7 @@ import { FormIDs, QuestionTypes, TFormSubmit, useZodForm } from "../schema";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { z } from "zod";
+import { Accordion } from "@/components/ui/accordion";
 
 export const formSchema = z.object({
   formTitle: z.string().min(10, {
@@ -40,7 +40,6 @@ export const formSchema = z.object({
 
 export default function NewForm() {
   const [questions, setQuestions] = useState<Array<number>>([]);
-
   const formKeys = FormIDs;
 
   const zodForm = useZodForm({
@@ -75,15 +74,12 @@ export default function NewForm() {
                     <FormItem className="font-bold">
                       <FormControl>
                         <Input
-                          placeholder="Title goes here...."
-                          {...field}
+                          placeholder="What is your form called?"
                           className="w-full"
                           id={formKeys.formTitleId}
+                          {...field}
                         />
                       </FormControl>
-                      <FormDescription>
-                        What is your form called?.
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   );
@@ -93,22 +89,23 @@ export default function NewForm() {
           </Card>
 
           <br />
-          {questions.map((_, index) => {
-            const qNo = index + 1;
-            const questionName = `questions${qNo}` as const;
-            return (
-              <>
-                <AskQuestion
-                  qNo={qNo}
-                  key={`${formKeys.getIdAtIndex(index)}-aq`}
-                  id={formKeys.getIdAtIndex(index)}
-                  zodForm={zodForm}
-                />
-                <br />
-              </>
-            );
-          })}
-
+          <Accordion type="single" collapsible>
+            {questions.map((_, index) => {
+              const qNo = index + 1;
+              return (
+                <>
+                  <AskQuestion
+                    qNo={qNo}
+                    key={`${formKeys.getIdAtIndex(index)}-aq`}
+                    id={formKeys.getIdAtIndex(index)}
+                    zodForm={zodForm}
+                    open={qNo === questions.length}
+                  />
+                  <br />
+                </>
+              );
+            })}
+          </Accordion>
           <div className="flex flex-col items-center">
             {
               <Button
