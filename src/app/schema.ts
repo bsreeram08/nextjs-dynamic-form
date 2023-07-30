@@ -20,11 +20,11 @@ export const QuestionTypeTest = {
 } satisfies { [K in TQuestionTypes]: string };
 
 export type TQuestionsForm = {
-  questions: {
+  questions: Array<{
     question: string;
     formType: TQuestionTypes;
     options?: string[] | undefined;
-  }[];
+  }>;
   formTitle: string;
 };
 export type QuestionZodForm = UseFormReturn<TQuestionsForm, any, undefined>;

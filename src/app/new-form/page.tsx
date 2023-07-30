@@ -17,30 +17,38 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { z } from "zod";
 import { Accordion } from "@/components/ui/accordion";
 import { FieldErrors } from "react-hook-form";
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/components/ui/use-toast";
 
 export const formSchema = z.object({
   formTitle: z.string().min(10, {
     message: "Title must be at least of 10 characters.",
   }),
-  questions: z.array(
-    z.object({
-      question: z.string().min(10, {
-        message: "Question should at least be of 10 characters.",
-      }),
-      formType: z.enum(QuestionTypes),
-      options: z.optional(
-        z.array(
-          z.string().min(10, {
-            message: "Options should at least be of 10 characters.",
-          })
-        )
-      ),
-    })
-  ),
+  questions: z
+    .array(
+      z.object({
+        question: z.string().min(10, {
+          message: "Question should at least be of 10 characters.",
+        }),
+        formType: z.enum(QuestionTypes),
+        options: z.optional(
+          z.array(
+            z.string().min(10, {
+              message: "Options should at least be of 10 characters.",
+            })
+          )
+        ),
+      })
+    )
+    .min(1, {
+      message: "You need to add at least one question.",
+    }),
 });
 
 export default function NewForm() {
   const [questions, setQuestions] = useState<Array<number>>([]);
+  const { toast } = useToast();
+
   const formKeys = FormIDs;
 
   const zodForm = useZodForm({
@@ -59,6 +67,17 @@ export default function NewForm() {
   async function onInValidSubmit(values: FieldErrors<TQuestionsForm>) {
     console.log("Invalid Submit");
     console.log(values);
+    const errors: Array<string> = [];
+    function addError(message: string) {
+      errors.push(message);
+    }
+    values.formTitle?.message ? addError(values.formTitle.message) : null;
+    values.questions?.message ? addError(values.questions.message) : null;
+    toast({
+      title: "Uh oh!, you have to take care of these things first.",
+      description: errors.join(" "),
+      variant: "destructive",
+    });
   }
 
   return (
@@ -139,6 +158,7 @@ export default function NewForm() {
           </form>
         </Form>
       </div>
+      <Toaster />
     </div>
   );
 }
