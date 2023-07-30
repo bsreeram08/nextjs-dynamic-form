@@ -11,14 +11,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 import AskQuestion from "./question";
-import {
-  FormIDs,
-  QuestionTypes,
-  TFormSubmit,
-  TQuestionFormSchema,
-  createQuestionForm,
-  useZodForm,
-} from "../schema";
+import { FormIDs, QuestionTypes, TFormSubmit, useZodForm } from "../schema";
 
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,7 +39,7 @@ export const formSchema = z.object({
 });
 
 export default function NewForm() {
-  const [questions, setQuestions] = useState<Array<TQuestionFormSchema>>([]);
+  const [questions, setQuestions] = useState<Array<number>>([]);
 
   const formKeys = FormIDs;
 
@@ -126,7 +119,7 @@ export default function NewForm() {
                   formKeys.addQuestion();
                   setQuestions((prevQuestions) => [
                     ...prevQuestions,
-                    createQuestionForm(`questions${prevQuestions.length}`),
+                    prevQuestions.length,
                   ]);
                 }}
               >
@@ -138,7 +131,9 @@ export default function NewForm() {
               className="flex-0 w-1/2"
               onClick={(event) => {
                 event.preventDefault();
+                console.log("Clicked");
                 zodForm.handleSubmit(onTitleSubmit);
+                console.log(zodForm.getValues());
               }}
             >
               Submit

@@ -14,18 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  QuestionTypeTest,
-  QuestionTypes,
-  QuestionZodForm,
-  TQuestionTypes,
-} from "../schema";
-
-const FormSchema = z.object({
-  type: z.enum(["all", "mentions", "none"], {
-    required_error: "You need to select a notification type.",
-  }),
-});
+import { QuestionTypeTest, QuestionTypes, QuestionZodForm } from "../schema";
 
 export function RadioGroupForm({
   zodForm,
@@ -40,7 +29,6 @@ export function RadioGroupForm({
     <div>
       <FormField
         {...zodForm.register(`questions.${qNo}.formType`)}
-        name="type"
         render={({ field }) => (
           <FormItem className="space-y-3">
             <FormLabel>
