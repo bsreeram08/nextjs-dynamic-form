@@ -1,6 +1,35 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { generateID } from "@jetit/id";
 import { UseFormProps, useForm } from "react-hook-form";
 import { ZodString, z } from "zod";
+import { UseFormReturn } from "react-hook-form";
+
+export const QuestionTypes = [
+  "RADIO",
+  "CHECK",
+  "SMALL_TEXT",
+  "LARGE_TEXT",
+] as const;
+
+export type TQuestionTypes = (typeof QuestionTypes)[number];
+export const QuestionTypeTest = {
+  CHECK: "Multiple choice question with multi-select.",
+  LARGE_TEXT: "Long answer.",
+  RADIO: "Multiple choice question with single-select.",
+  SMALL_TEXT: "Short-hand answer.",
+} satisfies { [K in TQuestionTypes]: string };
+export type QuestionZodForm = UseFormReturn<
+  {
+    questions: {
+      question: string;
+      formType: TQuestionTypes;
+      options?: string[] | undefined;
+    }[];
+    formTitle: string;
+  },
+  any,
+  undefined
+>;
 
 export const questionSchema = z.object({
   questions: z.array(
@@ -60,4 +89,15 @@ export function useGetZodForm(questionForm: TQuestionFormSchema) {
     schema: questionForm,
     mode: "onChange",
   });
+}
+
+export class FormIDs {
+  static readonly questions: Array<string> = [];
+  static readonly formTitleId: string = generateID("HEX", "FF");
+  static readonly questionsIds = () => FormIDs.questions;
+  static readonly getIdAtIndex = (index: number) => FormIDs.questions[index];
+  static readonly addQuestion = () => {
+    FormIDs.questions.push(generateID("HEX", "FE"));
+    return FormIDs.questions[FormIDs.questions.length - 1];
+  };
 }

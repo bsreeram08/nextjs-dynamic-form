@@ -8,46 +8,44 @@ import {
   FormField,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { TQuestionFormSchema, useZodForm } from "./schema";
-import { UseFormReturn } from "react-hook-form";
+import { RadioGroupForm } from "../_lib/radio";
+import { QuestionZodForm } from "../schema";
 
 export default function AskQuestion({
   qNo,
-  questionName,
-  qf,
+  id,
+  zodForm,
 }: {
   qNo: number;
-  questionName: `questions${number}`;
-  qf: UseFormReturn<
-    {
-      [x: `questions${number}`]: string;
-    },
-    any,
-    undefined
-  >;
+  id: string;
+  zodForm: QuestionZodForm;
 }) {
   return (
-    <div>
+    <div id={`${id}-div`}>
       <Card>
         <CardHeader>
           <CardTitle>Question {qNo}</CardTitle>
         </CardHeader>
         <CardContent>
           <FormField
-            control={qf.control}
-            name={questionName}
+            {...zodForm.register(`questions.${qNo}.question`)}
             render={({ field }) => {
               return (
                 <FormItem>
                   <FormControl>
                     <Input
                       placeholder="question goes here...."
+                      id={id}
                       {...field}
-                      id={`question${qNo}`}
                     />
                   </FormControl>
                   <FormDescription>
-                    Select the type of Answer this question requires.
+                    <RadioGroupForm
+                      zodForm={zodForm}
+                      key={`${id}-options`}
+                      qNo={qNo}
+                      id={id}
+                    />
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
