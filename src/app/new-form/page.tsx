@@ -20,7 +20,7 @@ import { FieldErrors } from "react-hook-form";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 
-export const formSchema = z.object({
+const formSchema = z.object({
   formTitle: z.string().min(10, {
     message: "Title must be at least of 10 characters.",
   }),
