@@ -5,10 +5,10 @@ import { ZodString, z } from "zod";
 import { UseFormReturn } from "react-hook-form";
 
 export const QuestionTypes = [
-  "RADIO",
-  "CHECK",
   "SMALL_TEXT",
   "LARGE_TEXT",
+  "RADIO",
+  "CHECK",
 ] as const;
 
 export type TQuestionTypes = (typeof QuestionTypes)[number];
@@ -18,18 +18,16 @@ export const QuestionTypeTest = {
   RADIO: "Multiple choice question with single-select.",
   SMALL_TEXT: "Short-hand answer.",
 } satisfies { [K in TQuestionTypes]: string };
-export type QuestionZodForm = UseFormReturn<
-  {
-    questions: {
-      question: string;
-      formType: TQuestionTypes;
-      options?: string[] | undefined;
-    }[];
-    formTitle: string;
-  },
-  any,
-  undefined
->;
+
+export type TQuestionsForm = {
+  questions: Array<{
+    question: string;
+    formType: TQuestionTypes;
+    options?: string[] | undefined;
+  }>;
+  formTitle: string;
+};
+export type QuestionZodForm = UseFormReturn<TQuestionsForm, any, undefined>;
 
 export const questionSchema = z.object({
   questions: z.array(
@@ -49,10 +47,6 @@ export const titleForm = z.object({
 export type TQuestionSchema = z.infer<
   typeof questionSchema
 >["questions"][number];
-
-export type TFormSubmit = {
-  formTitle: string;
-};
 
 export function useZodForm<TSchema extends z.ZodType>(
   props: Omit<UseFormProps<TSchema["_input"]>, "resolver"> & {

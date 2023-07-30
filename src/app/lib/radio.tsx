@@ -1,12 +1,6 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-
-import { Button } from "@/components/ui/button";
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,
@@ -21,26 +15,21 @@ import {
   TQuestionTypes,
 } from "../schema";
 
-const FormSchema = z.object({
-  type: z.enum(["all", "mentions", "none"], {
-    required_error: "You need to select a notification type.",
-  }),
-});
-
 export function RadioGroupForm({
   zodForm,
   qNo,
   id,
+  updateSelect,
 }: {
   zodForm: QuestionZodForm;
   qNo: number;
   id: string;
+  updateSelect: (event: TQuestionTypes) => void;
 }) {
   return (
     <div>
       <FormField
-        {...zodForm.register(`questions.${qNo}.formType`)}
-        name="type"
+        {...zodForm.register(`questions.${qNo - 1}.formType`)}
         render={({ field }) => (
           <FormItem className="space-y-3">
             <FormLabel>
@@ -48,8 +37,11 @@ export function RadioGroupForm({
             </FormLabel>
             <FormControl>
               <RadioGroup
-                onValueChange={field.onChange}
-                defaultValue={field.value}
+                onValueChange={(event: TQuestionTypes) => {
+                  field.onChange(event);
+                  updateSelect(event);
+                }}
+                defaultValue={QuestionTypes[0]}
                 className="flex flex-col space-y-1"
               >
                 {QuestionTypes.map((_, index) => {
